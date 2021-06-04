@@ -174,19 +174,22 @@ IScaleLayer* addBatchNorm2d(INetworkDefinition *network, std::map<std::string, W
     for (int i = 0; i < len; i++) {
         scval[i] = gamma[i] / sqrt(var[i] + eps);
     }
-    Weights scale{DataType::kFLOAT, scval, len};
-    
+    Weights scale{DataType::kFLOAT, nullptr, len};
+    scale.values = scval;
+
     float *shval = reinterpret_cast<float*>(malloc(sizeof(float) * len));
     for (int i = 0; i < len; i++) {
         shval[i] = beta[i] - mean[i] * gamma[i] / sqrt(var[i] + eps);
     }
-    Weights shift{DataType::kFLOAT, shval, len};
+    Weights shift{DataType::kFLOAT, nullptr, len};
+    shift.values = shval;
 
     float *pval = reinterpret_cast<float*>(malloc(sizeof(float) * len));
     for (int i = 0; i < len; i++) {
         pval[i] = 1.0;
     }
-    Weights power{DataType::kFLOAT, pval, len};
+    Weights power{DataType::kFLOAT, nullptr, len};
+    power.values = pval;
 
     weightMap[lname + ".scale"] = scale;
     weightMap[lname + ".shift"] = shift;
